@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Data Suhu dan Kelembapan</title>
+  <style>
+    /* Global Styles */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #e8f0f2;
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      width: 80%;
+      margin: 40px auto;
+      padding: 20px;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    h1 {
+      text-align: center;
+      color: #4CAF50;
+      margin-bottom: 20px;
+      font-size: 2rem;
+    }
+
+    /* Summary Section */
+    .summary {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .summary div {
+      background-color: #f4f7fb;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      font-size: 1.1rem;
+      font-weight: bold;
+    }
+
+    .summary div span {
+      font-size: 1.5rem;
+      color: #4CAF50;
+    }
+
+    /* Table Section */
+    .section {
+      margin-top: 40px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    th, td {
+      padding: 12px;
+      text-align: left;
+      font-size: 1.1rem;
+    }
+
+    th {
+      background-color: #4CAF50;
+      color: white;
+      text-transform: uppercase;
+      font-weight: bold;
+    }
+
+    td {
+      background-color: #f9f9f9;
+    }
+
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    tbody tr:hover {
+      background-color: #e2f7e2;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    /* Year Section */
+    .section h2 {
+      font-size: 1.5rem;
+      color: #333;
+      margin-bottom: 10px;
+    }
+
+    #tahun-max {
+      font-size: 1.3rem;
+      color: #4CAF50;
+      font-weight: bold;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Data Suhu dan Kelembapan</h1>
+
+    <div class="summary">
+      <div><strong>Suhu Maksimum:</strong> <span id="suhu-max"></span></div>
+      <div><strong>Suhu Minimum:</strong> <span id="suhu-min"></span></div>
+      <div><strong>Suhu Rata-rata:</strong> <span id="suhu-rata"></span></div>
+    </div>
+
+    <div class="section">
+      <h2>Data Suhu dan Kelembapan</h2>
+      <table id="data-suhu">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Suhu</th>
+            <th>Kelembapan</th>
+            <th>Waktu</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- Data akan diisi melalui JavaScript -->
+        </tbody>
+      </table>
+    </div>
+
+    <div class="section">
+      <h2>Tahun dengan Suhu Maksimum</h2>
+      <div id="tahun-max"></div>
+    </div>
+
+  </div>
+
+  <script>
+    // Mengambil data dari API
+    fetch('http://localhost/152022172_Risha%20Marcella_UTS%20IOT/suhu.php')
+      .then(response => response.json())
+      .then(data => {
+        // Menampilkan suhu maksimum, minimum, dan rata-rata
+        document.getElementById('suhu-max').textContent = data.suhumax + '°C';
+        document.getElementById('suhu-min').textContent = data.suhumin + '°C';
+        document.getElementById('suhu-rata').textContent = data.suhurata.toFixed(2) + '°C';
+
+        // Menampilkan data suhu dan kelembapan
+        const tableBody = document.querySelector('#data-suhu tbody');
+        data.nilai_suhu_max_humid_max.forEach(item => {
+          const row = document.createElement('tr');
+
+          const cellId = document.createElement('td');
+          cellId.textContent = item.id;
+          row.appendChild(cellId);
+
+          const cellSuhu = document.createElement('td');
+          cellSuhu.textContent = item.suhu + '°C';
+          row.appendChild(cellSuhu);
+
+          const cellHumid = document.createElement('td');
+          cellHumid.textContent = item.humid + '%';
+          row.appendChild(cellHumid);
+
+          const cellTs = document.createElement('td');
+          cellTs.textContent = item.ts;
+          row.appendChild(cellTs);
+
+          tableBody.appendChild(row);
+        });
+
+        // Menampilkan tahun dengan suhu maksimum
+        const tahunMax = document.getElementById('tahun-max');
+        data.mount_year_max.forEach(item => {
+          tahunMax.textContent = item.mount_years;
+        });
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  </script>
+</body>
+</html>
